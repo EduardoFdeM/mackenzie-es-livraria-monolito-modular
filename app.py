@@ -1,8 +1,14 @@
 """Fábrica da aplicação Monolítica Modular da Livraria Mackenzie."""
 
 import os
+import sys
+from pathlib import Path
 from typing import Optional
 from flask import Flask
+
+_root_dir = Path(__file__).resolve().parent
+if str(_root_dir) not in sys.path:
+    sys.path.insert(0, str(_root_dir))
 
 from modules.shared.events import EventBus
 from modules.catalogo.repository import CatalogoRepository

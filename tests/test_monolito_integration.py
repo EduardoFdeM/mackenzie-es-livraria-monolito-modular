@@ -59,3 +59,25 @@ def test_reserva_unidade_sem_estoque_redireciona_com_erro(client):
     )
     assert res.status_code == 200
     assert "Não há exemplares disponíveis" in res.text
+
+
+def test_detalhes_livro_inexistente_redireciona_com_erro(client):
+    res = client.get("/livros/9999999999999", follow_redirects=True)
+    assert res.status_code == 200
+    assert "não foi encontrado no catálogo" in res.text
+
+
+def test_reserva_com_campos_vazios_ou_livro_inexistente(client):
+    # Campos vazios
+    res_vazio = client.post("/reservas", data={"isbn": "", "unidade": ""}, follow_redirects=True)
+    assert res_vazio.status_code == 200
+    assert "Informe o ISBN e a unidade desejada" in res_vazio.text
+
+    # Livro inexistente
+    res_inexistente = client.post(
+        "/reservas",
+        data={"isbn": "9999999999999", "unidade": "Paulista"},
+        follow_redirects=True,
+    )
+    assert res_inexistente.status_code == 200
+    assert "não encontrado no catálogo" in res_inexistente.text

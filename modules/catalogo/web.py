@@ -1,6 +1,7 @@
 """Rotas e controladores Web do módulo Catálogo."""
 
-from flask import Blueprint, current_app, render_template, request
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from modules.shared.exceptions import LivroNaoEncontradoError
 
 catalogo_bp = Blueprint("catalogo", __name__)
 
@@ -35,7 +36,12 @@ def detalhes(isbn: str):
     catalogo_service = current_app.config["CATALOGO_SERVICE"]
     estoque_service = current_app.config["ESTOQUE_SERVICE"]
 
-    livro = catalogo_service.obter_por_isbn(isbn)
+    try:
+        livro = catalogo_service.obter_por_isbn(isbn)
+    except LivroNaoEncontradoError:
+        flash(f"Livro com ISBN '{isbn}' não foi encontrado no catálogo.", "error")
+        return redirect(url_for("catalogo.index"))
+
     estoques = estoque_service.listar_estoques_livro(isbn)
 
     return render_template("catalogo/detalhes.html", livro=livro, estoques=estoques)

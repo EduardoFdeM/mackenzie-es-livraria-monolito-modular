@@ -1,7 +1,7 @@
 """Rotas e controladores Web do módulo Reserva."""
 
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
-from modules.shared.exceptions import LivrariaError
+from modules.shared.exceptions import LivrariaError, LivroNaoEncontradoError
 
 reserva_bp = Blueprint("reserva", __name__)
 
@@ -27,6 +27,9 @@ def criar():
         reserva = reserva_service.criar_reserva(isbn=isbn, unidade=unidade)
         flash(f"Reserva {reserva.codigo} realizada com sucesso na unidade {unidade}!", "success")
         return redirect(url_for("reserva.listar"))
+    except LivroNaoEncontradoError as e:
+        flash(str(e), "error")
+        return redirect(url_for("catalogo.index"))
     except LivrariaError as e:
         flash(str(e), "error")
         return redirect(url_for("catalogo.detalhes", isbn=isbn))
