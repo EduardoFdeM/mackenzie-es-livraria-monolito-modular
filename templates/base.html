@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Livraria Mackenzie — Monólito Modular{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="{{ url_for('catalogo.index') }}" class="brand">
+                <span class="brand-badge">M</span>
+                <span class="brand-title">Livraria Mackenzie</span>
+                <span class="brand-tag">Monólito Modular</span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('catalogo.index') }}" class="nav-link">Catálogo</a>
+                <a href="{{ url_for('reserva.listar') }}" class="nav-link">Minhas Reservas</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'success' %}✓{% else %}⚠{% endif %}
+                            </span>
+                            <span class="flash-text">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <p>© 2026 Livraria Mackenzie — Laboratório 8 de Engenharia de Software</p>
+            <p class="footer-muted">Arquitetura Monolítica Modular baseada em Bounded Contexts</p>
+        </div>
+    </footer>
+</body>
+</html>

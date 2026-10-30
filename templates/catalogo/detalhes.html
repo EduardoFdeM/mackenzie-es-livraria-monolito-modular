@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ livro.titulo }} — Livraria Mackenzie{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{{ url_for('catalogo.index') }}">← Voltar ao Catálogo</a>
+</div>
+
+<div class="details-container">
+    <div class="book-details-card">
+        <span class="badge badge-accent">ISBN {{ livro.isbn }}</span>
+        <h1 class="details-title">{{ livro.titulo }}</h1>
+        <p class="details-author">Autor: <strong>{{ livro.autor }}</strong></p>
+        <p class="details-price">Preço: <span>{{ livro.preco_formatado }}</span></p>
+
+        <hr class="separator" />
+
+        <h3>Disponibilidade e Localização Física por Unidade</h3>
+        <p class="section-desc">Consulte a estante física e escolha a unidade para retirada imediata:</p>
+
+        <div class="branch-table-container">
+            <table class="branch-table">
+                <thead>
+                    <tr>
+                        <th>Unidade / Filial</th>
+                        <th>Saldo Atual</th>
+                        <th>Localização Física (Estante)</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for est in estoques %}
+                        <tr>
+                            <td class="font-bold">{{ est.unidade }}</td>
+                            <td>
+                                {% if est.quantidade > 0 %}
+                                    <span class="badge badge-success">{{ est.quantidade }} disponíveis</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Indisponível</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="location-tag">{{ est.localizacao_formatada }}</span>
+                            </td>
+                            <td>
+                                {% if est.quantidade > 0 %}
+                                    <form action="{{ url_for('reserva.criar') }}" method="POST">
+                                        <input type="hidden" name="isbn" value="{{ livro.isbn }}">
+                                        <input type="hidden" name="unidade" value="{{ est.unidade }}">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            Reservar nesta Unidade
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-sm btn-disabled" disabled>Sem Estoque</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

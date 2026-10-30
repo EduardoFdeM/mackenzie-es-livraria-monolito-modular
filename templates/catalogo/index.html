@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Catálogo de Livros e Exemplares</h1>
+    <p>Consulte títulos acadêmicos, disponibilidade por unidade física e faça reservas em tempo real.</p>
+    
+    <form action="{{ url_for('catalogo.index') }}" method="GET" class="search-form">
+        <input 
+            type="text" 
+            name="q" 
+            value="{{ termo }}" 
+            placeholder="Buscar por título, autor ou ISBN..." 
+            class="search-input"
+            autofocus
+        >
+        <button type="submit" class="btn btn-primary">Pesquisar</button>
+        {% if termo %}
+            <a href="{{ url_for('catalogo.index') }}" class="btn btn-secondary">Limpar</a>
+        {% endif %}
+    </form>
+</section>
+
+{% if termo %}
+    <p class="search-info">Exibindo resultados para: <strong>"{{ termo }}"</strong> ({{ itens|length }} encontrados)</p>
+{% endif %}
+
+<div class="book-grid">
+    {% for item in itens %}
+        <article class="book-card">
+            <div class="book-card-header">
+                <span class="book-isbn">ISBN: {{ item.livro.isbn }}</span>
+                <span class="badge {% if item.total_exemplares > 0 %}badge-success{% else %}badge-danger{% endif %}">
+                    {% if item.total_exemplares > 0 %}
+                        {{ item.total_exemplares }} exemplar(es)
+                    {% else %}
+                        Esgotado
+                    {% endif %}
+                </span>
+            </div>
+
+            <h2 class="book-title">{{ item.livro.titulo }}</h2>
+            <p class="book-author">Por <strong>{{ item.livro.autor }}</strong></p>
+            <p class="book-price">{{ item.livro.preco_formatado }}</p>
+
+            <div class="stock-summary">
+                <h4>Disponibilidade por Filial:</h4>
+                <ul class="stock-pills">
+                    {% for est in item.estoques %}
+                        <li class="stock-pill {% if est.quantidade > 0 %}pill-active{% else %}pill-zero{% endif %}">
+                            <span class="pill-name">{{ est.unidade }}:</span>
+                            <span class="pill-qty">{{ est.quantidade }} unid.</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="book-card-actions">
+                <a href="{{ url_for('catalogo.detalhes', isbn=item.livro.isbn) }}" class="btn btn-block btn-outline">
+                    Ver Detalhes e Reservar
+                </a>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <p>Nenhum livro encontrado para o termo pesquisado.</p>
+            <a href="{{ url_for('catalogo.index') }}" class="btn btn-secondary">Ver todo o catálogo</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

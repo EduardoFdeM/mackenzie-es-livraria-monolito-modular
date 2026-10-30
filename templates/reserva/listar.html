@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Reservas — Livraria Mackenzie{% endblock %}
+
+{% block content %}
+<div class="header-action-row">
+    <div>
+        <h1>Minhas Reservas</h1>
+        <p>Acompanhe seus pedidos de reserva, vouchers de retirada e cancelamentos com estorno automático de estoque.</p>
+    </div>
+    <a href="{{ url_for('catalogo.index') }}" class="btn btn-secondary">+ Reservar Outro Livro</a>
+</div>
+
+<div class="reservas-table-container">
+    {% if reservas %}
+        <table class="reservas-table">
+            <thead>
+                <tr>
+                    <th>Código da Reserva</th>
+                    <th>Título do Livro</th>
+                    <th>ISBN</th>
+                    <th>Unidade de Retirada</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                    <tr>
+                        <td class="font-mono font-bold">{{ r.codigo }}</td>
+                        <td>{{ r.titulo }}</td>
+                        <td class="font-mono text-muted">{{ r.isbn }}</td>
+                        <td>{{ r.unidade }}</td>
+                        <td>
+                            {% if r.status == 'Ativa' %}
+                                <span class="badge badge-success">● Ativa</span>
+                            {% else %}
+                                <span class="badge badge-neutral">✕ Cancelada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.status == 'Ativa' %}
+                                <form action="{{ url_for('reserva.cancelar', codigo=r.codigo) }}" method="POST" onsubmit="return confirm('Deseja realmente cancelar a reserva {{ r.codigo }}? O exemplar retornará ao estoque físico da unidade {{ r.unidade }}.');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Cancelar Reserva
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted text-sm">Exemplar devolvido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <p>Você ainda não realizou nenhuma reserva de livro.</p>
+            <a href="{{ url_for('catalogo.index') }}" class="btn btn-primary">Explorar Catálogo</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
