@@ -130,8 +130,29 @@ Todos os testes unitários dos módulos e o fluxo de integração ponta a ponta 
 
 ## 6. Deploy em Nuvem (Exercício 8.4)
 
-O projeto está 100% configurado para deploy imediato no **Render**:
+### Opção A — Azure App Service (Tier Grátis F1 — Azure for Students)
+1. Acesse o [Portal da Azure](https://portal.azure.com) com sua conta institucional Mackenzie.
+2. Na barra de pesquisa superior, procure por **Serviços de Aplicativo (App Services)** e clique em **Criar** -> **Aplicativo Web**.
+3. Preencha os campos básicos:
+   - **Assinatura**: *Azure for Students*
+   - **Grupo de Recursos**: crie um novo (ex.: `rg-mackenzie-es`)
+   - **Nome**: defina um nome único (ex.: `mack-livraria-modular-seu-nome`) $\rightarrow$ a URL será `https://mack-livraria-modular-seu-nome.azurewebsites.net`
+   - **Publicar**: Código
+   - **Pilha de runtime**: Python 3.12 (ou Python 3.11)
+   - **Sistema Operacional**: Linux
+   - **Região**: `East US` (Leste dos EUA — *recomendado para garantir cota disponível no plano gratuito F1*)
+   - **Plano de Preços**: Selecione **Gratuito F1** (1 GB de memória, 0 BRL/mês).
+4. Na aba **Implantação (Deployment)**:
+   - Ative a **Implantação contínua (GitHub)**.
+   - Conecte sua conta GitHub `EduardoFdeM`.
+   - Selecione o repositório `mackenzie-es-livraria-monolito-modular` e o branch `main`.
+5. Clique em **Revisar + Criar** e depois em **Criar**.
+   - O Azure criará automaticamente a pipeline no GitHub Actions e publicará a aplicação.
+   - Link de entrega do 8.4: `https://<seu-app>.azurewebsites.net`
 
+---
+
+### Opção B — Render
 1. Acesse [render.com](https://render.com) e conecte sua conta do GitHub.
 2. Clique em **New +** -> **Web Service**.
 3. Selecione o repositório `mackenzie-es-livraria-monolito-modular`.
@@ -141,7 +162,9 @@ O projeto está 100% configurado para deploy imediato no **Render**:
    - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT`
 5. Clique em **Deploy**. Sua aplicação estará online em um link público (ex.: `https://mackenzie-es-livraria-monolito-modular.onrender.com`).
 
-Também é possível executar via **Docker**:
+---
+
+### Opção C — Docker Local / Container Apps:
 ```bash
 docker build -t livraria-monolito .
 docker run -p 5000:5000 livraria-monolito
